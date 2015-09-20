@@ -1,0 +1,34 @@
+[General]
+Enabled = True
+CheckFile = /tmp/naptime
+Mode = off
+
+# Check TVheadend Server for running or upcoming recordings
+[CheckTVheadend]
+Host = localhost
+PortWeb = 9981
+PortHTSP = 9982
+PreWakeUp = 1800
+
+# Names or IP for computers that shall prevent the shutdown
+# We ping these computers in the list to check whether they are active
+[CheckNetwork]
+servers = 10.10.2.25
+
+# Damons that always have one process running, only if more that one process is active we prevent the shutdown
+# The values are used with grep, so just a unique portion is sufficient
+[CheckDeamon]
+daemons = rsync BackupPC_
+
+# Important applications that shall prevent the shutdown
+# The values are used with grep, so just a unique portion is sufficient
+[CheckApps]
+apps = ^nxagent$ ^rsnapshot$ ^wsus$ ^wget$ ^screen$ ^mlnetp$ ^apt-get$ ^aptitude$ ^dpkg$ ^cp$
+
+# Check for active users
+[CheckUsers]
+local = w -h |egrep -v ^kodi |wc -l
+nfs = netstat -tn |grep :2049 |wc -l
+#smb = smbstatus -L |wc -l
+#afp = macusers |grep -v PID |wc -l
+tvheadend = netstat -tn |grep :9981 |grep -v 127.0.0.1 |wc -l
