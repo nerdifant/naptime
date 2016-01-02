@@ -29,6 +29,6 @@ apps = ^nxagent$ ^rsnapshot$ ^wsus$ ^wget$ ^screen$ ^mlnetp$ ^apt-get$ ^aptitude
 [CheckUsers]
 local = w -h |egrep -v ^kodi |wc -l
 nfs = netstat -tn |grep :2049 |wc -l
-#smb = smbstatus -L |wc -l
+#smb = smbstatus -L |grep -v "No locked files" |grep -v "^$" |wc -l 
 #afp = macusers |grep -v PID |wc -l
 tvheadend = netstat -tn |grep :9981 |grep -v 127.0.0.1 |wc -l

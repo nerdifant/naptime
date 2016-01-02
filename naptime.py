@@ -26,10 +26,9 @@ def main():
   sys_mode = "off"
   sys_path_config = "/etc/" + script_name + ".conf"
   sys_path_checkfile = None
-  sys_path_log = None
 
   try:
-    opts, args = getopt.getopt(sys.argv[1:], "hc:fl:", ["help","config","force","log"])
+    opts, args = getopt.getopt(sys.argv[1:], "hc:f", ["help","config","force"])
 
   except getopt.GetoptError as err:
     # print help information and exit:
@@ -46,8 +45,6 @@ def main():
         sys_path_config = a
     elif o in ("-f", "--force"):
       force = True
-    elif o in ("-l", "--log"):
-      sys_path_log = a
     else:
       assert False, "unhandled option"
 
@@ -187,9 +184,15 @@ def main():
   if sys_halt or force:
     
     if os.path.isfile(sys_path_checkfile) or force:
-      cmd = "rtcwake -m " + sys_mode
-      if 0 < sys_idle: cmd = cmd + " -s " + str(int(sys_idle))
       Message.bl("> Going down for sleep now.")
+      if 0 < sys_idle: 
+        cmd = "rtcwake -m " + sys_mode + " -s " + str(int(sys_idle))
+      else
+        if sys_mode == "halt": cmd = "shutdown -h now"
+        else:
+          Message.rt("  > Mode " + sys_mode + " not implemented!")
+          sys.exit(1)
+
       try:
         os.system(cmd)
         os.remove(sys_path_checkfile)
@@ -206,11 +209,6 @@ def main():
     Message.ws("> Can't going to sleep while server is in use!")
     if os.path.isfile(sys_path_checkfile): os.remove(sys_path_checkfile)
 
-
-  ## ----- write Log File
-  if None != sys_path_log:
-    with open(sys_path_log, "w") as text_file:
-      text_file.write("%s" % Message.out().encode("utf-8"))
 
 if __name__ == "__main__":
   main()
