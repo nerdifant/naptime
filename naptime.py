@@ -185,10 +185,12 @@ def main():
     
     if os.path.isfile(sys_path_checkfile) or force:
       Message.bl("> Going down for sleep now.")
+
       if 0 < sys_idle: 
         cmd = "rtcwake -m " + sys_mode + " -s " + str(int(sys_idle))
-      else
+      else:
         if sys_mode == "halt": cmd = "shutdown -h now"
+        elif sys_mode == "off": cmd = "shutdown -h now"
         else:
           Message.rt("  > Mode " + sys_mode + " not implemented!")
           sys.exit(1)
