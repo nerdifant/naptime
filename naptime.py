@@ -4,12 +4,12 @@ from lib.msg import message
 from lib.config import config
 from lib.hts import tvheadend
 from datetime import datetime
+from croniter import croniter
 import getopt
 import sys
 import os 
 import commands
 import time
-
 
 def usage():
   print "TO DO"
@@ -77,7 +77,16 @@ def main():
         Message.gn("  > Using Mode: " + sys_mode)
       except: Message.ge("  > No Mode defined!")
         
-
+      try:
+        exp = Config.map(s)['scheduledwakeup']
+        iter = croniter(exp, datetime.now())
+        wakeup_next = time.mktime(iter.get_next(datetime).timetuple())
+        wakeup_idle = wakeup_next - time.time()
+        Message.gn("  > Next wake up: " + datetime.fromtimestamp(wakeup_next).strftime('%d.%m.%Y %H:%M:%S'))
+        if sys_idle > wakeup_idle or sys_idle < 0:
+          sys_idle = wakeup_idle
+      except: Message.ge("  > No ScheduledWakeUp defined!")
+        
 
     ## ----- Checking TVheadend
     elif s == "CheckTVheadend":
@@ -102,7 +111,8 @@ def main():
           Message.rt("  > Next recording: " + tv_response["entries"][0]["title"]["ger"] + " at " + datetime.fromtimestamp(tv_next_recording).strftime('%d.%m.%Y %H:%M:%S'))
         else:
           Message.gn("  > Next recording: " + tv_response["entries"][0]["title"]["ger"] + " at " + datetime.fromtimestamp(tv_next_recording).strftime('%d.%m.%Y %H:%M:%S'))
-          sys_idle = tv_idle - tv_pre_wake_up
+          if sys_idle > (tv_idle - tv_pre_wake_up) or sys_idle < 0:
+            sys_idle = tv_idle - tv_pre_wake_up
 
       except:
         Message.rt("  > Broken configuration!")

@@ -2,6 +2,7 @@
 Enabled = True
 CheckFile = /tmp/naptime
 Mode = off
+ScheduledWakeUp = 0 18 * * 1-5
 
 # Check TVheadend Server for running or upcoming recordings
 [CheckTVheadend]
